@@ -4,29 +4,17 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-const doesExist = (username) => {
-    let usersWithSameName = users.filter((user) => {
-        user.username === username;
-    });
-
-    if (usersWithSameName.length > 0) {
-        return true;
-    } else {
-        return false;
-    }
-};
-
 public_users.post("/register", (req,res) => {
   //Write your code here
-  const username = req.params.username;
-  const password = req.params.password;
+  const username = req.body.username;
+  const password = req.body.password;
 
   if (username && password) {
-    if (!doesExist(username)) {
+    if (!isValid(username)) {
         users.push({"username":username, "password":password});
         return res.status(200).json({ message: "User is now registered, and can now login."})
     } else {
-        return res.status(404).json({ message: "User already exists!"})
+        return res.status(409).json({ message: "User already exists!"})
     }
   }
   return res.status(404).json({message: "Unable to register user."});
